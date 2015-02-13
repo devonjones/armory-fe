@@ -1,3 +1,30 @@
 html {
   font: 12px Helvetica, sans-serif;
 }
+
+.armory_table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.armory_table td {
+  padding: 3px 5px;
+}
+
+.armory_table thead tr {
+  background-color: #ddd;
+}
+
+.armory_table thead td {
+  font-weight: bold;
+  cursor: pointer;
+  padding: 6px 5px;
+}
+
+.armory_table tbody td {
+
+}
+
+.armory_table tfoot td {
+
+}

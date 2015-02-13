@@ -12,11 +12,11 @@ var Campaign = module.exports = backbone.Model.extend({
         'id': i+1,
         'name': 'Loot Item ' + (i+1),
         'type': 'Treasure',
-        'price': i+5,
-        'quantity': 1,
+        'price': Math.floor((Math.random() * 50) + 1),
+        'quantity': Math.floor((Math.random() * 3) + 1),
         'sale_percent': 0.8,
         'weight': 1.0,
-        'owner': null,
+        'owner': (i%3 === 0) ? 'Bob' : null,
         'created': 1423754966940,
         'updated': 1423754966940
       };

@@ -33,6 +33,10 @@
     "react": "^0.12.0",
     "react-profiler": "0.0.1",
     "reactify": "^0.16.0",
+    "underscore": "^1.7.0",
     "vinyl-source-stream": "^0.1.1"
+  },
+  "dependencies": {
+    "underscore": "^1.7.0"
   }
 }
