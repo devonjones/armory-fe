@@ -1,7 +1,7 @@
 armory-fe
 =====================
 
-User interfacing front end for the armory app
+User facing front end built against the [Armory](https://github.com/devonjones/armory) web services.
 
 **Getting Started**
 
