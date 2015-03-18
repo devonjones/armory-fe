@@ -1,7 +1,15 @@
 /** @jsx React.DOM */
-var React = require('react/addons');
-var Campaign = require('./models/campaign');
+var $ = require('jquery');
+var Backbone = require('backbone');
 var _ = require('underscore');
+Backbone.$ = $;
+
+var React = require('react/addons');
+// var Campaign = require('./models/campaign');
+var User = require('./models/user');
+// var CampaignHeader = require('./views/campaign_header');
+var AppHeader = require('./views/app_header');
+
 
 var fakeData = {
   "id": 1,
@@ -12,20 +20,35 @@ var fakeData = {
 };
 
 var Container = React.createClass({
+  getInitialState: function() {
+    return {
+      user: new User()
+    };
+  },
+
+  componentWillMount: function() {
+    var user = new User()
+        self = this;
+
+    user.fetch({
+      success: function(model, response, options) {
+        console.log('success')
+        self.setState({user: model});
+      },
+      failure: function(model, response, options) {
+        console.log('failure')
+      }
+    });
+  },
+
   render: function() {
-    var campaign = this.props.campaign;
     return (
       <div>
-        <CampaignHeader campaign={campaign} />
-        <UberTable data={campaign.loot()} />
+        <AppHeader user={this.state.user}/>
       </div>
     );
-  }
-});
-
-var CampaignHeader = React.createClass({
-  render: function() {
-    return (<h3>Campaign: {this.props.campaign.get('name')}</h3>);
+    // <CampaignHeader campaign={campaign} />
+    // <UberTable data={campaign.loot()} />
   }
 });
 
@@ -134,5 +157,6 @@ var UberTable = React.createClass({
   }
 });
 
-var campaign = new Campaign(fakeData);
-React.render(<Container campaign={campaign} />, document.getElementById('main'));
+// var campaign = new Campaign(fakeData);
+// React.render(<Container campaign={campaign} />, document.getElementById('main'));
+React.render(<Container />, document.getElementById('main'));

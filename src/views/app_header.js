@@ -1,14 +1,14 @@
 /** @jsx React.DOM */
 var React = require('react/addons');
 
-var CampaignHeader = React.createClass({
+var AppHeader = React.createClass({
   render: function() {
     return (
       <div>
-        <h3>Campaign: {this.props.campaign.get('name')}</h3>
+        <h3>Hello, {this.props.user.get('name')}</h3>
       </div>
     );
   }
 });
 
-module.exports = CampaignHeader;
+module.exports = AppHeader;
