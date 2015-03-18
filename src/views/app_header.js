@@ -4,7 +4,7 @@ var React = require('react/addons');
 var AppHeader = React.createClass({
   render: function() {
     return (
-      <div>
+      <div className='header'>
         <h3>Hello, {this.props.user.get('name')}</h3>
       </div>
     );

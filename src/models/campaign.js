@@ -4,6 +4,8 @@ var Loots = require("../collections/loots");
 var Campaign = module.exports = backbone.Model.extend({
   __name__: 'Campaign',
 
+  url: '/campaigns',
+
   initialize: function(options) {
     this.items = new Loots();
 
