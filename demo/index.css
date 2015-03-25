@@ -93,6 +93,10 @@ html {
   font: 12px Helvetica, sans-serif;
 }
 
+.campaigns .campaign {
+  padding: 5px;
+}
+
 .auth_url {
 	position: absolute;
   top: 5px;

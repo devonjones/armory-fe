@@ -6,18 +6,21 @@ Backbone.$ = $;
 
 var React = require('react/addons');
 var User = require('./models/user');
+var Campaigns = require('./collections/campaigns');
 var AppHeader = require('./views/app_header');
-var Campaigns = require('./views/campaigns');
+var CampaignList = require('./views/campaign_list');
 
 var Container = React.createClass({
   getInitialState: function() {
     return {
-      user: new User()
+      user: new User(),
+      campaigns: []
     };
   },
 
   componentWillMount: function() {
-    var user = new User()
+    var user = new User(),
+        campaigns = new Campaigns(),
         self = this;
 
     user.fetch({
@@ -28,6 +31,16 @@ var Container = React.createClass({
         console.log('failed to get user', arguments)
       }
     });
+
+    campaigns.fetch({
+      success: function(collection, response, options) {
+        self.setState({campaigns: collection.models});
+      },
+      failure: function(collection, response, options) {
+        console.log('failed to get campaigns', arguments)
+      }
+    });
+
   },
 
   render: function() {
@@ -35,7 +48,7 @@ var Container = React.createClass({
       <div>
         <AppHeader user={this.state.user}/>
         <div className='app_container'>
-          <Campaigns user={this.state.user}/>
+          <CampaignList user={this.state.user} campaigns={this.state.campaigns}/>
         </div>
       </div>
     );

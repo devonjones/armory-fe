@@ -24,12 +24,12 @@ var NewCampaign = React.createClass({
 
     var self = this;
 
-    campaign = new Campaign({name: this.state.name});
-    campaign.save({
-      success: function() {
-        this.props.onCreate(campaign);
+    campaign = new Campaign();
+    campaign.save({name: this.state.name}, {
+      success: function(model, response, options) {
+        self.props.onCreate(campaign);
       },
-      failure: function() {
+      failure: function(model, response, options) {
         console.log('failed to create campaign', arguments)
       }
     });
@@ -53,11 +53,27 @@ var NewCampaign = React.createClass({
   }
 });
 
-var Campaigns = React.createClass({
+var CampaignSummary = React.createClass({
+
+  // handleDelete_: function() {
+  //   this.props.campaign.destroy();
+  // },
+
+  render: function() {
+    var campaign = this.props.campaign;
+    return (
+      <div className='campaign' key={campaign.cid}>
+        {campaign.get('name')}
+      </div>
+    );
+  }
+//<a href='#' onClick={this.handleDelete_}>Delete</a>
+})
+
+var CampaignList = React.createClass({
   getInitialState: function() {
     return {
-      showNewCampaign: false,
-      campaigns: []
+      showNewCampaign: false
     }
   },
 
@@ -67,9 +83,10 @@ var Campaigns = React.createClass({
 
   handleCreate_: function(campaign) {
     console.log('handle create new campaign')
-    var newCampaigns = _.clone(this.state.campaigns);
-    newCampaigns.push(campaign);
-    this.setState({campaigns: newCampaigns, showNewCampaign: false});
+    var campaigns = this.props.campaigns;
+    campaigns.push(campaign);
+
+    this.setState({showNewCampaign: false});
   },
 
   render: function() {
@@ -78,11 +95,9 @@ var Campaigns = React.createClass({
         {this.state.showNewCampaign ? <NewCampaign onCreate={this.handleCreate_} /> : null}
         {!this.state.showNewCampaign ? <NewCampaignLink handleOnClick={this.showNewCampaign_}/> : null}
         <div className='campaigns'>
-          {_.map(this.state.campaigns, function(campaign) {
+          {_.map(this.props.campaigns, function(campaign) {
             return (
-              <div key={campaign.cid}>
-                {campaign.get('name')}
-              </div>
+              <CampaignSummary campaign={campaign}/>
             );
           })}
         </div>
@@ -91,4 +106,4 @@ var Campaigns = React.createClass({
   }
 });
 
-module.exports = Campaigns;
+module.exports = CampaignList;

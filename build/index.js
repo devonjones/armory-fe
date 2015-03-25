@@ -7,18 +7,21 @@ Backbone.$ = $;
 
 var React = require('react/addons');
 var User = require('./models/user');
+var Campaigns = require('./collections/campaigns');
 var AppHeader = require('./views/app_header');
-var Campaigns = require('./views/campaigns');
+var CampaignList = require('./views/campaign_list');
 
 var Container = React.createClass({displayName: "Container",
   getInitialState: function() {
     return {
-      user: new User()
+      user: new User(),
+      campaigns: []
     };
   },
 
   componentWillMount: function() {
-    var user = new User()
+    var user = new User(),
+        campaigns = new Campaigns(),
         self = this;
 
     user.fetch({
@@ -29,6 +32,16 @@ var Container = React.createClass({displayName: "Container",
         console.log('failed to get user', arguments)
       }
     });
+
+    campaigns.fetch({
+      success: function(collection, response, options) {
+        self.setState({campaigns: collection.models});
+      },
+      failure: function(collection, response, options) {
+        console.log('failed to get campaigns', arguments)
+      }
+    });
+
   },
 
   render: function() {
@@ -36,7 +49,7 @@ var Container = React.createClass({displayName: "Container",
       React.createElement("div", null, 
         React.createElement(AppHeader, {user: this.state.user}), 
         React.createElement("div", {className: "app_container"}, 
-          React.createElement(Campaigns, {user: this.state.user})
+          React.createElement(CampaignList, {user: this.state.user, campaigns: this.state.campaigns})
         )
       )
     );
@@ -150,7 +163,7 @@ var UberTable = React.createClass({displayName: "UberTable",
 
 React.render(React.createElement(Container, null), document.getElementById('main'));
 
-},{"./models/user":170,"./views/app_header":171,"./views/campaigns":172,"backbone":2,"jquery":4,"react/addons":5,"underscore":166}],2:[function(require,module,exports){
+},{"./collections/campaigns":167,"./models/user":171,"./views/app_header":172,"./views/campaign_list":173,"backbone":2,"jquery":4,"react/addons":5,"underscore":166}],2:[function(require,module,exports){
 //     Backbone.js 1.1.2
 
 //     (c) 2010-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -32539,13 +32552,24 @@ module.exports = warning;
 
 },{}],167:[function(require,module,exports){
 var Backbone = require('backbone');
+var Campaign = require('../models/campaign');
+
+var Loots = module.exports = Backbone.Collection.extend({
+  __name__: 'Campaigns',
+
+  model: Campaign,
+
+  url: '/campaigns'
+});
+},{"../models/campaign":169,"backbone":2}],168:[function(require,module,exports){
+var Backbone = require('backbone');
 var Loot = require('../models/loot');
 
 var Loots = module.exports = Backbone.Collection.extend({
   __name__: 'Loots',
   model: Loot
 });
-},{"../models/loot":169,"backbone":2}],168:[function(require,module,exports){
+},{"../models/loot":170,"backbone":2}],169:[function(require,module,exports){
 var backbone = require("backbone");
 var Loots = require("../collections/loots");
 
@@ -32578,7 +32602,7 @@ var Campaign = module.exports = backbone.Model.extend({
     return this.items;
   }
 });
-},{"../collections/loots":167,"backbone":2}],169:[function(require,module,exports){
+},{"../collections/loots":168,"backbone":2}],170:[function(require,module,exports){
 var backbone = require("backbone");
 
 var Loot = module.exports = backbone.Model.extend({
@@ -32588,9 +32612,10 @@ var Loot = module.exports = backbone.Model.extend({
 
   }
 });
-},{"backbone":2}],170:[function(require,module,exports){
+},{"backbone":2}],171:[function(require,module,exports){
 var $ = require('jquery');
 var Backbone = require("backbone");
+var Campaigns = require('../collections/campaigns');
 
 var User = module.exports = Backbone.Model.extend({
   __name__: 'User',
@@ -32602,7 +32627,7 @@ var User = module.exports = Backbone.Model.extend({
       email: ''
   }
 });
-},{"backbone":2,"jquery":4}],171:[function(require,module,exports){
+},{"../collections/campaigns":167,"backbone":2,"jquery":4}],172:[function(require,module,exports){
 /** @jsx React.DOM */
 var React = require('react/addons');
 
@@ -32617,7 +32642,7 @@ var AppHeader = React.createClass({displayName: "AppHeader",
 });
 
 module.exports = AppHeader;
-},{"react/addons":5}],172:[function(require,module,exports){
+},{"react/addons":5}],173:[function(require,module,exports){
 /** @jsx React.DOM */
 var $ = require('jquery');
 var _ = require('underscore');
@@ -32644,12 +32669,12 @@ var NewCampaign = React.createClass({displayName: "NewCampaign",
 
     var self = this;
 
-    campaign = new Campaign({name: this.state.name});
-    campaign.save({
-      success: function() {
-        this.props.onCreate(campaign);
+    campaign = new Campaign();
+    campaign.save({name: this.state.name}, {
+      success: function(model, response, options) {
+        self.props.onCreate(campaign);
       },
-      failure: function() {
+      failure: function(model, response, options) {
         console.log('failed to create campaign', arguments)
       }
     });
@@ -32673,11 +32698,27 @@ var NewCampaign = React.createClass({displayName: "NewCampaign",
   }
 });
 
-var Campaigns = React.createClass({displayName: "Campaigns",
+var CampaignSummary = React.createClass({displayName: "CampaignSummary",
+
+  // handleDelete_: function() {
+  //   this.props.campaign.destroy();
+  // },
+
+  render: function() {
+    var campaign = this.props.campaign;
+    return (
+      React.createElement("div", {className: "campaign", key: campaign.cid}, 
+        campaign.get('name')
+      )
+    );
+  }
+//<a href='#' onClick={this.handleDelete_}>Delete</a>
+})
+
+var CampaignList = React.createClass({displayName: "CampaignList",
   getInitialState: function() {
     return {
-      showNewCampaign: false,
-      campaigns: []
+      showNewCampaign: false
     }
   },
 
@@ -32687,9 +32728,10 @@ var Campaigns = React.createClass({displayName: "Campaigns",
 
   handleCreate_: function(campaign) {
     console.log('handle create new campaign')
-    var newCampaigns = _.clone(this.state.campaigns);
-    newCampaigns.push(campaign);
-    this.setState({campaigns: newCampaigns, showNewCampaign: false});
+    var campaigns = this.props.campaigns;
+    campaigns.push(campaign);
+
+    this.setState({showNewCampaign: false});
   },
 
   render: function() {
@@ -32698,11 +32740,9 @@ var Campaigns = React.createClass({displayName: "Campaigns",
         this.state.showNewCampaign ? React.createElement(NewCampaign, {onCreate: this.handleCreate_}) : null, 
         !this.state.showNewCampaign ? React.createElement(NewCampaignLink, {handleOnClick: this.showNewCampaign_}) : null, 
         React.createElement("div", {className: "campaigns"}, 
-          _.map(this.state.campaigns, function(campaign) {
+          _.map(this.props.campaigns, function(campaign) {
             return (
-              React.createElement("div", {key: campaign.cid}, 
-                campaign.get('name')
-              )
+              React.createElement(CampaignSummary, {campaign: campaign})
             );
           })
         )
@@ -32711,5 +32751,5 @@ var Campaigns = React.createClass({displayName: "Campaigns",
   }
 });
 
-module.exports = Campaigns;
-},{"../models/campaign":168,"jquery":4,"react/addons":5,"underscore":166}]},{},[1]);
+module.exports = CampaignList;
+},{"../models/campaign":169,"jquery":4,"react/addons":5,"underscore":166}]},{},[1]);
