@@ -15,33 +15,25 @@ var Container = React.createClass({displayName: "Container",
   getInitialState: function() {
     return {
       user: new User(),
-      campaigns: []
+      campaigns: new Campaigns()
     };
   },
 
   componentWillMount: function() {
-    var user = new User(),
-        campaigns = new Campaigns(),
-        self = this;
+    var user = this.state.user,
+        campaigns = this.state.campaigns;
 
     user.fetch({
-      success: function(model, response, options) {
-        self.setState({user: model});
-      },
       failure: function(model, response, options) {
         console.log('failed to get user', arguments)
       }
     });
 
     campaigns.fetch({
-      success: function(collection, response, options) {
-        self.setState({campaigns: collection.models});
-      },
       failure: function(collection, response, options) {
         console.log('failed to get campaigns', arguments)
       }
     });
-
   },
 
   render: function() {
@@ -56,110 +48,110 @@ var Container = React.createClass({displayName: "Container",
   }
 });
 
-var OwnerSelector = React.createClass({displayName: "OwnerSelector",
-  getInitialState: function() {
-    return {
-      mode: 'viewing'
-    };
-  },
+// var OwnerSelector = React.createClass({
+//   getInitialState: function() {
+//     return {
+//       mode: 'viewing'
+//     };
+//   },
 
-  handleClick: function(){
-    var newMode = this.state.mode === 'viewing' ? 'selecting' : 'viewing';
-    this.setState({mode: newMode});
-  },
+//   handleClick: function(){
+//     var newMode = this.state.mode === 'viewing' ? 'selecting' : 'viewing';
+//     this.setState({mode: newMode});
+//   },
 
-  render: function() {
-    var renderData;
+//   render: function() {
+//     var renderData;
 
-    if (this.state.mode === 'viewing') {
-      if (this.props.item.get('owner')) {
-        return (React.createElement("span", null, this.props.item.get('owner')));
-      } else {
-        return (
-          React.createElement("span", null, 
-            React.createElement("a", {href: "#", onClick: this.handleClick}, "Claim")
-          )
-        );
-      }
-    } else if (this.state.mode === 'selecting') {
-      return (
-        React.createElement("select", {onChange: this.handleClick}, 
-          React.createElement("option", {value: "1"}, "A"), 
-          React.createElement("option", {value: "2"}, "B"), 
-          React.createElement("option", {value: "3"}, "C")
-        )
-      );
-    }
+//     if (this.state.mode === 'viewing') {
+//       if (this.props.item.get('owner')) {
+//         return (<span>{this.props.item.get('owner')}</span>);
+//       } else {
+//         return (
+//           <span>
+//             <a href='#' onClick={this.handleClick}>Claim</a>
+//           </span>
+//         );
+//       }
+//     } else if (this.state.mode === 'selecting') {
+//       return (
+//         <select onChange={this.handleClick}>
+//           <option value='1'>A</option>
+//           <option value='2'>B</option>
+//           <option value='3'>C</option>
+//         </select>
+//       );
+//     }
 
-  }
-});
+//   }
+// });
 
-var UberTable = React.createClass({displayName: "UberTable",
-  getInitialState: function() {
-    return {
-      sortColumn: 'name',
-      sortDirection: 'default'
-    };
-  },
+// var UberTable = React.createClass({
+//   getInitialState: function() {
+//     return {
+//       sortColumn: 'name',
+//       sortDirection: 'default'
+//     };
+//   },
 
-  handleColumnClick: function(column, e) {
-    e.preventDefault();
+//   handleColumnClick: function(column, e) {
+//     e.preventDefault();
 
-    var sortOptions = {};
-    if (column === this.state.sortColumn) {
-      sortOptions.sortDirection = this.state.sortDirection === 'default' ? 'reverse' : 'default';
-    } else {
-      sortOptions.sortColumn = column;
-    }
-    this.setState(sortOptions);
-  },
+//     var sortOptions = {};
+//     if (column === this.state.sortColumn) {
+//       sortOptions.sortDirection = this.state.sortDirection === 'default' ? 'reverse' : 'default';
+//     } else {
+//       sortOptions.sortColumn = column;
+//     }
+//     this.setState(sortOptions);
+//   },
 
-  render: function() {
-    var data = this.props.data,
-        column = this.state.sortColumn,
-        orderedData = data.sortBy(function(item){
-          return item.get(column);
-        });
+//   render: function() {
+//     var data = this.props.data,
+//         column = this.state.sortColumn,
+//         orderedData = data.sortBy(function(item){
+//           return item.get(column);
+//         });
 
-    if (this.state.sortDirection === 'reverse') {
-      orderedData.reverse();
-    }
+//     if (this.state.sortDirection === 'reverse') {
+//       orderedData.reverse();
+//     }
 
-    return (
-      React.createElement("table", {className: "armory_table"}, 
-        React.createElement("thead", null, 
-          React.createElement("tr", null, 
-            React.createElement("td", {onClick: this.handleColumnClick.bind(this, 'name')}, "Name"), 
-            React.createElement("td", {onClick: this.handleColumnClick.bind(this, 'type')}, "Type"), 
-            React.createElement("td", {onClick: this.handleColumnClick.bind(this, 'price')}, "Price"), 
-            React.createElement("td", {onClick: this.handleColumnClick.bind(this, 'quantity')}, "Quantity"), 
-            React.createElement("td", {onClick: this.handleColumnClick.bind(this, 'sale_percent')}, "Sale Percent"), 
-            React.createElement("td", {onClick: this.handleColumnClick.bind(this, 'weight')}, "Weight"), 
-            React.createElement("td", {onClick: this.handleColumnClick.bind(this, 'owner')}, "Owner")
-          )
-        ), 
-        React.createElement("tbody", null, 
-        _.map(orderedData, function(item) {
-          return (
-            React.createElement("tr", {key: item.get('id')}, 
-              React.createElement("td", null, item.get('name')), 
-              React.createElement("td", null, item.get('type')), 
-              React.createElement("td", null, item.get('price')), 
-              React.createElement("td", null, item.get('quantity')), 
-              React.createElement("td", null, item.get('sale_percent')), 
-              React.createElement("td", null, item.get('weight')), 
-              React.createElement("td", null, 
-                React.createElement(OwnerSelector, {item: item})
-              )
-            )
-          );
-        })
-        ), 
-        React.createElement("tfoot", null)
-      )
-    );
-  }
-});
+//     return (
+//       <table className='armory_table'>
+//         <thead>
+//           <tr>
+//             <td onClick={this.handleColumnClick.bind(this, 'name')}>Name</td>
+//             <td onClick={this.handleColumnClick.bind(this, 'type')}>Type</td>
+//             <td onClick={this.handleColumnClick.bind(this, 'price')}>Price</td>
+//             <td onClick={this.handleColumnClick.bind(this, 'quantity')}>Quantity</td>
+//             <td onClick={this.handleColumnClick.bind(this, 'sale_percent')}>Sale Percent</td>
+//             <td onClick={this.handleColumnClick.bind(this, 'weight')}>Weight</td>
+//             <td onClick={this.handleColumnClick.bind(this, 'owner')}>Owner</td>
+//           </tr>
+//         </thead>
+//         <tbody>
+//         {_.map(orderedData, function(item) {
+//           return (
+//             <tr key={item.get('id')}>
+//               <td>{item.get('name')}</td>
+//               <td>{item.get('type')}</td>
+//               <td>{item.get('price')}</td>
+//               <td>{item.get('quantity')}</td>
+//               <td>{item.get('sale_percent')}</td>
+//               <td>{item.get('weight')}</td>
+//               <td>
+//                 <OwnerSelector item={item} />
+//               </td>
+//             </tr>
+//           );
+//         })}
+//         </tbody>
+//         <tfoot></tfoot>
+//       </table>
+//     );
+//   }
+// });
 
 React.render(React.createElement(Container, null), document.getElementById('main'));
 
@@ -32567,6 +32559,7 @@ var Loot = require('../models/loot');
 
 var Loots = module.exports = Backbone.Collection.extend({
   __name__: 'Loots',
+
   model: Loot
 });
 },{"../models/loot":170,"backbone":2}],169:[function(require,module,exports){
@@ -32574,43 +32567,13 @@ var backbone = require("backbone");
 var Loots = require("../collections/loots");
 
 var Campaign = module.exports = backbone.Model.extend({
-  __name__: 'Campaign',
-
-  url: '/campaigns',
-
-  initialize: function(options) {
-    this.items = new Loots();
-
-    for(var i=0;i<10;i++) {
-      var lootData = {
-        'id': i+1,
-        'name': 'Loot Item ' + (i+1),
-        'type': 'Treasure',
-        'price': Math.floor((Math.random() * 50) + 1),
-        'quantity': Math.floor((Math.random() * 3) + 1),
-        'sale_percent': 0.8,
-        'weight': 1.0,
-        'owner': (i%3 === 0) ? 'Bob' : null,
-        'created': 1423754966940,
-        'updated': 1423754966940
-      };
-      this.items.add(lootData);
-    }
-  },
-
-  loot: function() {
-    return this.items;
-  }
+  __name__: 'Campaign'
 });
 },{"../collections/loots":168,"backbone":2}],170:[function(require,module,exports){
 var backbone = require("backbone");
 
 var Loot = module.exports = backbone.Model.extend({
-  __name__: 'Loot',
-
-  initialize: function(options) {
-
-  }
+  __name__: 'Loot'
 });
 },{"backbone":2}],171:[function(require,module,exports){
 var $ = require('jquery');
@@ -32668,18 +32631,15 @@ var NewCampaign = React.createClass({displayName: "NewCampaign",
     e.preventDefault();
 
     var self = this;
-
-    campaign = new Campaign();
-    campaign.save({name: this.state.name}, {
+    this.props.campaigns.create({name: this.state.name}, {
       success: function(model, response, options) {
-        self.props.onCreate(campaign);
+        self.props.onCreate(model);
       },
       failure: function(model, response, options) {
         console.log('failed to create campaign', arguments)
       }
     });
   },
-
 
   handleChange_: function(event){
     this.setState({name: event.target.value});
@@ -32699,20 +32659,19 @@ var NewCampaign = React.createClass({displayName: "NewCampaign",
 });
 
 var CampaignSummary = React.createClass({displayName: "CampaignSummary",
-
-  // handleDelete_: function() {
-  //   this.props.campaign.destroy();
-  // },
+  handleDelete_: function() {
+    this.props.campaign.destroy();
+  },
 
   render: function() {
     var campaign = this.props.campaign;
+    console.log(campaign)
     return (
       React.createElement("div", {className: "campaign", key: campaign.cid}, 
-        campaign.get('name')
+        campaign.get('name'), " ", React.createElement("a", {href: "#", onClick: this.handleDelete_}, "Delete")
       )
     );
   }
-//<a href='#' onClick={this.handleDelete_}>Delete</a>
 })
 
 var CampaignList = React.createClass({displayName: "CampaignList",
@@ -32720,6 +32679,16 @@ var CampaignList = React.createClass({displayName: "CampaignList",
     return {
       showNewCampaign: false
     }
+  },
+
+  componentWillMount: function() {
+    this.props.campaigns.on('add remove', function() {
+      this.forceUpdate();
+    }.bind(this));
+  },
+
+  componentWillUnmount: function() {
+    this.props.campaigns.off();
   },
 
   showNewCampaign_: function() {
@@ -32737,10 +32706,10 @@ var CampaignList = React.createClass({displayName: "CampaignList",
   render: function() {
     return (
       React.createElement("div", null, 
-        this.state.showNewCampaign ? React.createElement(NewCampaign, {onCreate: this.handleCreate_}) : null, 
+        this.state.showNewCampaign ? React.createElement(NewCampaign, {onCreate: this.handleCreate_, campaigns: this.props.campaigns}) : null, 
         !this.state.showNewCampaign ? React.createElement(NewCampaignLink, {handleOnClick: this.showNewCampaign_}) : null, 
         React.createElement("div", {className: "campaigns"}, 
-          _.map(this.props.campaigns, function(campaign) {
+          _.map(this.props.campaigns.models, function(campaign) {
             return (
               React.createElement(CampaignSummary, {campaign: campaign})
             );

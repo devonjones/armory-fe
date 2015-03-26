@@ -23,18 +23,15 @@ var NewCampaign = React.createClass({
     e.preventDefault();
 
     var self = this;
-
-    campaign = new Campaign();
-    campaign.save({name: this.state.name}, {
+    this.props.campaigns.create({name: this.state.name}, {
       success: function(model, response, options) {
-        self.props.onCreate(campaign);
+        self.props.onCreate(model);
       },
       failure: function(model, response, options) {
         console.log('failed to create campaign', arguments)
       }
     });
   },
-
 
   handleChange_: function(event){
     this.setState({name: event.target.value});
@@ -54,20 +51,19 @@ var NewCampaign = React.createClass({
 });
 
 var CampaignSummary = React.createClass({
-
-  // handleDelete_: function() {
-  //   this.props.campaign.destroy();
-  // },
+  handleDelete_: function() {
+    this.props.campaign.destroy();
+  },
 
   render: function() {
     var campaign = this.props.campaign;
+    console.log(campaign)
     return (
       <div className='campaign' key={campaign.cid}>
-        {campaign.get('name')}
+        {campaign.get('name')} <a href='#' onClick={this.handleDelete_}>Delete</a>
       </div>
     );
   }
-//<a href='#' onClick={this.handleDelete_}>Delete</a>
 })
 
 var CampaignList = React.createClass({
@@ -75,6 +71,16 @@ var CampaignList = React.createClass({
     return {
       showNewCampaign: false
     }
+  },
+
+  componentWillMount: function() {
+    this.props.campaigns.on('add remove', function() {
+      this.forceUpdate();
+    }.bind(this));
+  },
+
+  componentWillUnmount: function() {
+    this.props.campaigns.off();
   },
 
   showNewCampaign_: function() {
@@ -92,10 +98,10 @@ var CampaignList = React.createClass({
   render: function() {
     return (
       <div>
-        {this.state.showNewCampaign ? <NewCampaign onCreate={this.handleCreate_} /> : null}
+        {this.state.showNewCampaign ? <NewCampaign onCreate={this.handleCreate_} campaigns={this.props.campaigns} /> : null}
         {!this.state.showNewCampaign ? <NewCampaignLink handleOnClick={this.showNewCampaign_}/> : null}
         <div className='campaigns'>
-          {_.map(this.props.campaigns, function(campaign) {
+          {_.map(this.props.campaigns.models, function(campaign) {
             return (
               <CampaignSummary campaign={campaign}/>
             );
