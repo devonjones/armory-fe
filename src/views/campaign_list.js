@@ -57,10 +57,10 @@ var CampaignSummary = React.createClass({
 
   render: function() {
     var campaign = this.props.campaign;
-    console.log(campaign)
+
     return (
       <div className='campaign' key={campaign.cid}>
-        {campaign.get('name')} <a href='#' onClick={this.handleDelete_}>Delete</a>
+        <a href='#' onClick={this.props.onCampaignClick.bind(this, campaign)}>{campaign.get('name')}</a> <button onClick={this.handleDelete_}>Delete</button>
       </div>
     );
   }
@@ -96,6 +96,8 @@ var CampaignList = React.createClass({
   },
 
   render: function() {
+    var onCampaignClickFn = this.props.onCampaignClick;
+
     return (
       <div>
         {this.state.showNewCampaign ? <NewCampaign onCreate={this.handleCreate_} campaigns={this.props.campaigns} /> : null}
@@ -103,7 +105,7 @@ var CampaignList = React.createClass({
         <div className='campaigns'>
           {_.map(this.props.campaigns.models, function(campaign) {
             return (
-              <CampaignSummary campaign={campaign}/>
+              <CampaignSummary onCampaignClick={onCampaignClickFn} campaign={campaign}/>
             );
           })}
         </div>

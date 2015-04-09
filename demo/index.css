@@ -109,6 +109,15 @@ html {
   border-bottom: 1px solid #666;
 }
 
+.header .header_link {
+  display: inline-block;
+}
+
+.header h3 {
+  margin-right: 10px;
+  display: inline-block;
+}
+
 .app_container {
   margin: 10px;
 }

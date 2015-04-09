@@ -6,6 +6,7 @@ var AppHeader = React.createClass({
     return (
       <div className='header'>
         <h3>Hello, {this.props.user.get('name')}</h3>
+        <a className='header_link' href='#' onClick={this.props.onUnsetCampaign}>Campaigns</a>
       </div>
     );
   }
