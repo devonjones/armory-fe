@@ -2,6 +2,48 @@
 var $ = require('jquery');
 var _ = require('underscore');
 var React = require('react/addons');
+var Invitation = require('../models/invitation')
+
+
+var InvitationForm = React.createClass({
+  getInitialState: function() {
+    return {
+      email: null
+    };
+  },
+
+  handleSubmit_: function(e){
+    e.preventDefault();
+
+    console.log('inviting', this.state.email)
+
+    // var self = this;
+    // this.props.campaigns.create({email: this.state.email}, {
+    //   success: function(model, response, options) {
+    //     self.props.onCreate(model);
+    //   },
+    //   failure: function(model, response, options) {
+    //     console.log('failed to create campaign', arguments)
+    //   }
+    // });
+  },
+
+  handleChange_: function(event){
+    this.setState({email: event.target.value});
+  },
+
+  render: function() {
+    return (
+      <div className='new_invite'>
+        <form onSubmit={this.handleSubmit_}>
+          <label htmlFor='invite_email'>Email: </label>
+          <input onChange={this.handleChange_} placeholder='E-mail' name='invite_email' type='text' value={this.state.value} />
+          <input type='submit' value='Invite' />
+        </form>
+      </div>
+    );
+  }
+});
 
 var CampaignShow = React.createClass({
   render: function() {
@@ -21,6 +63,7 @@ var CampaignShow = React.createClass({
               );
             })}
           </ul>
+          <InvitationForm />
         </div>
       </div>
     );
