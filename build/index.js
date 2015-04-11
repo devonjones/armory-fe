@@ -67,7 +67,7 @@ var Container = React.createClass({displayName: "Container",
 
 React.render(React.createElement(Container, null), document.getElementById('main'));
 
-},{"./collections/campaigns":178,"./models/user":182,"./views/app_header":183,"./views/campaign_list":184,"./views/campaign_show":185,"backbone":2,"jquery":4,"react/addons":5,"underscore":177}],2:[function(require,module,exports){
+},{"./collections/campaigns":178,"./models/user":183,"./views/app_header":184,"./views/campaign_list":185,"./views/campaign_show":186,"backbone":2,"jquery":4,"react/addons":5,"underscore":177}],2:[function(require,module,exports){
 //     Backbone.js 1.1.2
 
 //     (c) 2010-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -34232,7 +34232,7 @@ var Loots = module.exports = Backbone.Collection.extend({
 
   model: Loot
 });
-},{"../models/loot":181,"backbone":2}],180:[function(require,module,exports){
+},{"../models/loot":182,"backbone":2}],180:[function(require,module,exports){
 var backbone = require("backbone");
 var Loots = require("../collections/loots");
 
@@ -34242,10 +34242,17 @@ var Campaign = module.exports = backbone.Model.extend({
 },{"../collections/loots":179,"backbone":2}],181:[function(require,module,exports){
 var backbone = require("backbone");
 
+var Invitation = module.exports = backbone.Model.extend({
+  __name__: 'Invitation'
+});
+
+},{"backbone":2}],182:[function(require,module,exports){
+var backbone = require("backbone");
+
 var Loot = module.exports = backbone.Model.extend({
   __name__: 'Loot'
 });
-},{"backbone":2}],182:[function(require,module,exports){
+},{"backbone":2}],183:[function(require,module,exports){
 var $ = require('jquery');
 var Backbone = require("backbone");
 var Campaigns = require('../collections/campaigns');
@@ -34260,7 +34267,7 @@ var User = module.exports = Backbone.Model.extend({
       email: ''
   }
 });
-},{"../collections/campaigns":178,"backbone":2,"jquery":4}],183:[function(require,module,exports){
+},{"../collections/campaigns":178,"backbone":2,"jquery":4}],184:[function(require,module,exports){
 /** @jsx React.DOM */
 var React = require('react/addons');
 
@@ -34277,7 +34284,7 @@ var AppHeader = React.createClass({displayName: "AppHeader",
 
 module.exports = AppHeader;
 
-},{"react/addons":5}],184:[function(require,module,exports){
+},{"react/addons":5}],185:[function(require,module,exports){
 /** @jsx React.DOM */
 var $ = require('jquery');
 var _ = require('underscore');
@@ -34396,11 +34403,53 @@ var CampaignList = React.createClass({displayName: "CampaignList",
 
 module.exports = CampaignList;
 
-},{"../models/campaign":180,"jquery":4,"react/addons":5,"underscore":177}],185:[function(require,module,exports){
+},{"../models/campaign":180,"jquery":4,"react/addons":5,"underscore":177}],186:[function(require,module,exports){
 /** @jsx React.DOM */
 var $ = require('jquery');
 var _ = require('underscore');
 var React = require('react/addons');
+var Invitation = require('../models/invitation')
+
+
+var InvitationForm = React.createClass({displayName: "InvitationForm",
+  getInitialState: function() {
+    return {
+      email: null
+    };
+  },
+
+  handleSubmit_: function(e){
+    e.preventDefault();
+
+    console.log('inviting', this.state.email)
+
+    // var self = this;
+    // this.props.campaigns.create({email: this.state.email}, {
+    //   success: function(model, response, options) {
+    //     self.props.onCreate(model);
+    //   },
+    //   failure: function(model, response, options) {
+    //     console.log('failed to create campaign', arguments)
+    //   }
+    // });
+  },
+
+  handleChange_: function(event){
+    this.setState({email: event.target.value});
+  },
+
+  render: function() {
+    return (
+      React.createElement("div", {className: "new_invite"}, 
+        React.createElement("form", {onSubmit: this.handleSubmit_}, 
+          React.createElement("label", {htmlFor: "invite_email"}, "Email: "), 
+          React.createElement("input", {onChange: this.handleChange_, placeholder: "E-mail", name: "invite_email", type: "text", value: this.state.value}), 
+          React.createElement("input", {type: "submit", value: "Invite"})
+        )
+      )
+    );
+  }
+});
 
 var CampaignShow = React.createClass({displayName: "CampaignShow",
   render: function() {
@@ -34419,7 +34468,8 @@ var CampaignShow = React.createClass({displayName: "CampaignShow",
                 React.createElement("li", null, player)
               );
             })
-          )
+          ), 
+          React.createElement(InvitationForm, null)
         )
       )
     );
@@ -34428,4 +34478,4 @@ var CampaignShow = React.createClass({displayName: "CampaignShow",
 
 module.exports = CampaignShow;
 
-},{"jquery":4,"react/addons":5,"underscore":177}]},{},[1]);
+},{"../models/invitation":181,"jquery":4,"react/addons":5,"underscore":177}]},{},[1]);
