@@ -21,7 +21,7 @@
     "gulp": "^3.8.11",
     "iscroll": "^5.1.1",
     "jasmine-core": "^2.1.2",
-    "jquery": "^2.1.1",
+    "jquery": "^3.0.0",
     "karma": "^0.12.23",
     "karma-browserify": "^1.0.0",
     "karma-chrome-launcher": "^0.1.5",
