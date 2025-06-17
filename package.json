@@ -28,7 +28,7 @@
     "karma-jasmine": "^0.3.2",
     "karma-jsx-preprocessor": "0.0.9",
     "karma-phantomjs-launcher": "^0.1.4",
-    "lodash": "^2.4.1",
+    "lodash": "^4.0.0",
     "lorem": "^0.4.0",
     "react": "^0.13.1",
     "react-profiler": "0.0.1",
